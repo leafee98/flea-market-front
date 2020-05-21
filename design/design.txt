@@ -1,0 +1,15 @@
+    login
+    register
+    profile(grant&ban)
+    profileEdit(only self viewed)
+
+    productListSelling
+    productListCensor
+    productListSold
+    productListBought
+
+    productDetail(order/confirm/cancelOrder/delete)
+    productDetailEdit
+
+    chat
+
