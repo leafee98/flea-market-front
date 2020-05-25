@@ -87,7 +87,7 @@ const fleaApiParam = {
     getProductList: {},
     getBoughtProductList: { token: null },
     getMyProductList: { token: null },
-    getProductDetail: { jproductId: null },
+    getProductDetail: { productId: null },
     newProduct: { token: null },
     deleteProduct: { token: null, productId: null },
     editProduct: { token: null, productId: null },
@@ -108,24 +108,27 @@ const fleaApiParam = {
 function fleaApiRequest (url, params) {
   const fetchReq = {
     method: 'POST',
-    body: null,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
+    body: null
   }
 
-  let encodedParam = ''
+  const fd = new FormData()
   for (const property in params) {
-    encodedParam += '&' + property + '=' + params[property]
+    fd.append(property, params[property])
   }
-  encodedParam = encodedParam.substring(1)
-  encodedParam = encodeURI(encodedParam)
 
-  fetchReq.body = encodedParam
+  fetchReq.body = fd
   return fetch(url, fetchReq)
 }
 
-function fleaApiPictureUpload (picFile) {
+async function fleaApiPictureUpload (picFile) {
+  const handleUpload = function (body) {
+    if (body.success === true) {
+      return fleaApiUrl.picture.download + '?picUid=' + body.data
+    } else {
+      return ''
+    }
+  }
+
   const fd = new FormData()
   fd.append('pic', picFile)
   const fetchReq = {
@@ -133,6 +136,8 @@ function fleaApiPictureUpload (picFile) {
     body: fd
   }
   return fetch(fleaApiUrl.picture.upload, fetchReq)
+    .then(res => res.json())
+    .then(handleUpload)
 }
 
 const cookieUitls = {
@@ -166,7 +171,7 @@ const cookieUitls = {
       expireDate = new Date(Date.now() + expireSeconds)
     }
 
-    const tmpCookie = name + '=' + value + '; Expires=' + expireDate + '; SameSite=Strict'
+    const tmpCookie = name + '=' + value + '; Expires=' + expireDate + '; SameSite=Strict; Path=/'
     document.cookie = tmpCookie
   }
 }
