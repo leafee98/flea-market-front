@@ -44,7 +44,6 @@ export default {
       param.username = this.username
       param.password = this.password
       param.nickname = this.nickname
-      console.log(param)
       flea.api.request(flea.api.url.user.register, param)
         .then(res => res.json()).then(body => this.handleRegister(body))
     },

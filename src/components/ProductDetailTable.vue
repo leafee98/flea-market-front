@@ -141,7 +141,6 @@ export default {
       const p3 = flea.api.request(flea.api.url.product.editExpectedPrice, paramProductPrice).then(res => res.json())
       Promise.all([p1, p2, p3])
         .then(bodys => {
-          console.log(bodys)
           if (bodys[0].success === true &&
             bodys[1].success === true &&
             bodys[2].success === true) {
@@ -213,7 +212,6 @@ export default {
     },
     censorPass: function () {
       const param = { token: this.token, productId: this.detail.productId, pass: true }
-      console.log(param)
       flea.api.request(flea.api.url.admin.censorProduct, param)
         .then(res => res.json()).then(this.handlePromptResult)
     },

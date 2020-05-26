@@ -20,7 +20,8 @@ const routes = [
   { path: '', redirect: { name: 'login' } },
   { path: '/login', name: 'login', component: Login },
   { path: '/register', name: 'register', component: Register },
-  { path: '/profile', name: 'profile', component: Profile },
+  { path: '/profile', name: 'myProfile', component: Profile },
+  { path: '/profile/:username', name: 'profile', component: Profile },
 
   { path: '/product/', redirect: { name: 'productSelling' } },
   { path: '/product/list/selling', name: 'productSelling', component: ProductSelling },

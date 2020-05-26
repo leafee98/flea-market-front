@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="display: flex">
-      <el-avatar :size="128" style="margin: auto" src="avatarUrl"></el-avatar>
+      <el-avatar :size="128" style="margin: auto" :src="avatarUrl"></el-avatar>
     </div>
     <br />
     <table>
@@ -14,6 +14,7 @@
         </td>
       </tr>
     </table>
+    <el-button @click="viewDetail">view detail</el-button>
   </div>
 </template>
 
@@ -53,6 +54,9 @@ export default {
         res.push({ name: prop, value: obj[prop], key: x++ })
       }
       return res
+    },
+    viewDetail: function () {
+      this.$router.push({ name: 'profile', params: { username: this.userInfo.username } })
     }
   }
 }

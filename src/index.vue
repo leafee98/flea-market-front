@@ -11,10 +11,13 @@
           <el-button v-if="logged" @click="newProduct">publish product</el-button>
           <el-button v-if="logged" @click="jumpProfile">my profile</el-button>
           <el-button type="warning" v-if="logged" @click="logout">logout</el-button>
-          <el-avatar v-if="logged" src="avatarUrl">{{ nickname }}</el-avatar>
+
+          <el-avatar v-if="logged" :src="avatarUrl" :size="54"
+            style="margin-left: 15px">{{ nickname }}</el-avatar>
         </div>
       </el-header>
-      <el-main>
+
+      <el-main id="main-panel">
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -40,6 +43,9 @@ export default {
   },
   methods: {
     logout: function () {
+      const param = { token: flea.util.cookie.get('token') }
+      flea.api.request(flea.api.url.user.logout, param)
+
       flea.util.cookie.set('token', '23', 0)
       this.$message({
         message: 'logout from flea market, go to login page',
@@ -68,7 +74,7 @@ export default {
       this.$router.push({ name: 'boughtProducts' })
     },
     jumpProfile: function () {
-      this.$router.push({ name: 'profile' })
+      this.$router.push({ name: 'myProfile' })
       window.location.reload(false)
     },
     jumpMarket: function () {
@@ -103,5 +109,10 @@ export default {
 </script>
 
 <style>
-
+#main-panel {
+  margin-top: 16px;
+  padding-top: 8px;
+  box-sizing: border-box;
+  border-top: 2px dashed #d7dae2;
+}
 </style>
