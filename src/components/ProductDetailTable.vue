@@ -37,7 +37,7 @@
         <td>publish time</td>
         <td>
           <el-input v-if="edit" v-model="publishTimeStr" disabled/>
-          <div class="oneline-text-area" v-else>{{ detail.publishTime }}</div>
+          <div class="oneline-text-area" v-else>{{ publishTimeStr }}</div>
         </td>
       </tr>
     </table>
@@ -49,7 +49,7 @@
           class="pic-item"
           :preview-src-list="new Array(pic.productPicUrl)">
         </el-image>
-        <el-button @click="dropPic(pic)">drop</el-button>
+        <el-button v-if="edit" @click="dropPic(pic)">drop</el-button>
       </div>
     </div>
 
@@ -69,6 +69,11 @@
     <div style="display: flex" v-if="detail.productStatus === 'censoring' && admin">
       <el-button @click="censorPass">censor pass</el-button>
       <el-button @click="censorDeny">censor deny</el-button>
+    </div>
+    <div style="display: flex" v-if="logged">
+      <el-button v-if="detail.productStatus === 'selling'" @click="orderProduct">order</el-button>
+      <el-button v-if="confirmable" @click="confirmOrder">confrim order</el-button>
+      <el-button v-if="confirmable" @click="cancelOrder">cancel order</el-button>
     </div>
   </div>
 </template>
@@ -96,6 +101,18 @@ export default {
       get: function () {
         return flea.util.cookie.get('token')
       }
+    },
+    logged: {
+      get: function () {
+        return this.token !== undefined
+      }
+    },
+    confirmable: {
+      get: function () {
+        return this.detail.productStatus === 'ordered' ||
+          this.detail.productStatus === 'confirm_buyer' ||
+          this.detail.productStatus === 'confirm_seller'
+      }
     }
   },
   created: function () {
@@ -119,10 +136,20 @@ export default {
       const paramProductPrice =
         { token: token, productId: productId, price: expectedPrice }
 
-      const p1 = flea.api.request(flea.api.url.product.editProductName, paramProductName)
-      const p2 = flea.api.request(flea.api.url.product.editProductDetail, paramProductDetail)
-      const p3 = flea.api.request(flea.api.url.product.editExpectedPrice, paramProductPrice)
-      Promise.all([p1, p2, p3]).then(this.refreshRoute)
+      const p1 = flea.api.request(flea.api.url.product.editProductName, paramProductName).then(res => res.json())
+      const p2 = flea.api.request(flea.api.url.product.editProductDetail, paramProductDetail).then(res => res.json())
+      const p3 = flea.api.request(flea.api.url.product.editExpectedPrice, paramProductPrice).then(res => res.json())
+      Promise.all([p1, p2, p3])
+        .then(bodys => {
+          console.log(bodys)
+          if (bodys[0].success === true &&
+            bodys[1].success === true &&
+            bodys[2].success === true) {
+            this.handlePromptResult({ success: true })
+          } else {
+            this.handlePromptResult({ success: false })
+          }
+        })
     },
     newPic: function () {
       const handleAddPic = (url) => {
@@ -184,28 +211,47 @@ export default {
       flea.api.request(flea.api.url.product.deleteProduct, param)
         .then(this.refreshRoute)
     },
+    censorPass: function () {
+      const param = { token: this.token, productId: this.detail.productId, pass: true }
+      console.log(param)
+      flea.api.request(flea.api.url.admin.censorProduct, param)
+        .then(res => res.json()).then(this.handlePromptResult)
+    },
+    censorDeny: function () {
+      const param = { token: this.token, productId: this.detail.productId, pass: false }
+      flea.api.request(flea.api.url.admin.censorProduct, param)
+        .then(res => res.json()).then(this.handlePromptResult)
+    },
+    orderProduct: function () {
+      const param = { token: this.token, productId: this.detail.productId }
+      flea.api.request(flea.api.url.product.orderProduct, param)
+        .then(res => res.json()).then(this.handlePromptResult)
+    },
+    confirmOrder: function () {
+      const param = { token: this.token, productId: this.detail.productId }
+      flea.api.request(flea.api.url.product.confirmOrder, param)
+        .then(res => res.json()).then(this.handlePromptResult)
+    },
+    cancelOrder: function () {
+      const param = { token: this.token, productId: this.detail.productId }
+      flea.api.request(flea.api.url.product.cancelOrder, param)
+        .then(res => res.json()).then(this.handlePromptResult)
+    },
+    promptSuccess: function (success) {
+      setTimeout(() => { window.location.reload(false) }, 500)
+    },
     refreshRoute: function () {
       setTimeout(() => {
         window.location.reload(false)
       }, 500)
     },
-    censorPass: function () {
-      const param = { token: this.token, productId: this.detail.productId, pass: true }
-      console.log(param)
-      flea.api.request(flea.api.url.admin.censorProduct, param)
-        .then(res => res.json()).then(this.handleCensorResult)
-    },
-    censorDeny: function () {
-      const param = { token: this.token, productId: this.detail.productId, pass: false }
-      flea.api.request(flea.api.url.admin.censorProduct, param)
-        .then(res => res.json()).then(this.handleCensorResult)
-    },
-    handleCensorResult: function (body) {
+    handlePromptResult: function (body) {
       if (body.success === true) {
-        this.$message('action success')
+        this.$message.success('action success')
       } else {
-        this.$message({ message: 'action failed for unknown reason', type: 'error' })
+        this.$message.error('action failed')
       }
+      this.refreshRoute()
     }
   }
 }

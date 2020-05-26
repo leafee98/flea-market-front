@@ -51,6 +51,9 @@ export default {
   },
   created: function () {
     this.logged()
+    if (this.$route.params.logout === true) {
+      window.location.reload(false)
+    }
   }
 }
 </script>

@@ -8,6 +8,7 @@ import Profile from '@/pages/profile/Profile'
 
 import ProductSelling from '@/pages/product/list/selling.vue'
 import MyProducts from '@/pages/product/list/myProducts.vue'
+import BoughtProducts from '@/pages/product/list/boughtProducts.vue'
 import CensoringProduct from '@/pages/product/list/censoringProduct'
 
 import ProductDetail from '@/pages/product/detail.vue'
@@ -24,9 +25,10 @@ const routes = [
   { path: '/product/', redirect: { name: 'productSelling' } },
   { path: '/product/list/selling', name: 'productSelling', component: ProductSelling },
   { path: '/product/list/myProducts', name: 'myProducts', component: MyProducts },
-  { path: '/product/censoringProduct', name: 'censoringProduct', component: CensoringProduct },
+  { path: '/product/list/boughtProducts', name: 'boughtProducts', component: BoughtProducts },
+  { path: '/product/list/censoringProduct', name: 'censoringProduct', component: CensoringProduct },
 
-  { path: '/product/detail', name: 'productDetail', component: ProductDetail },
+  { path: '/product/detail/:productId', name: 'productDetail', component: ProductDetail },
   { path: '/product/edit/:productId', name: 'productDetailEdit', component: ProductDetailEdit }
 ]
 

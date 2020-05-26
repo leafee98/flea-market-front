@@ -7,6 +7,7 @@
           <el-button @click="jumpMarket">market</el-button>
           <el-button v-if="admin" @click="jumpCensoringProduct">censoring product</el-button>
           <el-button v-if="logged" @click="jumpMyProducts">my products</el-button>
+          <el-button v-if="logged" @click="jumpBoughtProducts">bought products</el-button>
           <el-button v-if="logged" @click="newProduct">publish product</el-button>
           <el-button v-if="logged" @click="jumpProfile">my profile</el-button>
           <el-button type="warning" v-if="logged" @click="logout">logout</el-button>
@@ -63,6 +64,9 @@ export default {
         })
       }
     },
+    jumpBoughtProducts: function () {
+      this.$router.push({ name: 'boughtProducts' })
+    },
     jumpProfile: function () {
       this.$router.push({ name: 'profile' })
       window.location.reload(false)
@@ -77,7 +81,7 @@ export default {
       this.$router.push({ name: 'productDetailEdit', params: { productId: productId } })
     },
     jumpLogin: function () {
-      this.$router.push({ name: 'login' })
+      this.$router.push({ name: 'login', params: { logout: true } })
     },
     jumpMyProducts: function () {
       this.$router.push({ name: 'myProducts' })

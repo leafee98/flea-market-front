@@ -1,7 +1,5 @@
 <template>
-  <compo-product-list
-    listType='selling'>
-  </compo-product-list>
+  <compo-product-list listType="boughtProducts"></compo-product-list>
 </template>
 
 <script>
