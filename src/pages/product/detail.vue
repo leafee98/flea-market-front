@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <compo-product-detail-table
+  <div style="display: flex">
+    <compo-product-detail-table style="width: 400px"
       :detail="detail" :edit="false">
     </compo-product-detail-table>
+
+    <compo-user-summary
+      id="compo-user-summary"
+      :seller="seller">
+    </compo-user-summary>
   </div>
 </template>
 
@@ -13,7 +18,8 @@ export default {
   data: function () {
     return {
       productId: 0,
-      detail: {}
+      detail: {},
+      seller: {}
     }
   },
   methods: {
@@ -21,6 +27,7 @@ export default {
       const loadData = (body) => {
         if (body.success) {
           this.detail = body.data
+          this.seller = this.detail.seller
         } else {
           this.$message({
             message: 'failed to get product detail',
@@ -44,5 +51,7 @@ export default {
 </script>
 
 <style>
-
+#compo-user-summary {
+  margin-left: 10%;
+}
 </style>
