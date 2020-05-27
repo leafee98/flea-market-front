@@ -14,7 +14,10 @@
         </td>
       </tr>
     </table>
-    <el-button @click="viewDetail">view detail</el-button>
+    <div style="display: flex">
+      <el-button @click="viewDetail">view detail</el-button>
+      <el-button @click="startChat">start chat</el-button>
+    </div>
   </div>
 </template>
 
@@ -57,6 +60,9 @@ export default {
     },
     viewDetail: function () {
       this.$router.push({ name: 'profile', params: { username: this.userInfo.username } })
+    },
+    startChat: function () {
+      this.$router.push({ name: 'startChat', params: { username: this.userInfo.username } })
     }
   }
 }

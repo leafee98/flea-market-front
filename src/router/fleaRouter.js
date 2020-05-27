@@ -14,6 +14,9 @@ import CensoringProduct from '@/pages/product/list/CensoringProduct'
 import ProductDetail from '@/pages/product/Detail.vue'
 import ProductDetailEdit from '@/pages/product/Edit.vue'
 
+import Chat from '@/pages/chat/Chat.vue'
+import StartChat from '@/pages/chat/StartChat.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -30,7 +33,12 @@ const routes = [
   { path: '/product/list/censoringProduct', name: 'censoringProduct', component: CensoringProduct },
 
   { path: '/product/detail/:productId', name: 'productDetail', component: ProductDetail },
-  { path: '/product/edit/:productId', name: 'productDetailEdit', component: ProductDetailEdit }
+  { path: '/product/edit/:productId', name: 'productDetailEdit', component: ProductDetailEdit },
+
+  { path: '/chat/chat/:chatSessionId', name: 'chatSession', component: Chat },
+  { path: '/chat/chat', name: 'chat', component: Chat },
+
+  { path: '/chat/startChat/:username', name: 'startChat', component: StartChat }
 ]
 
 const router = new VueRouter({

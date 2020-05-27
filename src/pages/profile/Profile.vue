@@ -94,6 +94,8 @@
                 v-model="newSocial.socialUrl"></el-input>
               <el-button @click="addSocial">add</el-button>
           </div>
+
+          <el-button v-else @click="startChat">start chat</el-button>
         </div>
       </div>
     </el-main>
@@ -246,6 +248,10 @@ export default {
       flea.api.request(flea.api.url.user.removeSocial, param)
         .then(res => res.json()).then(body => this.promptResult(body.success))
       setTimeout(this.refreshRoute, 800)
+    },
+
+    startChat: function () {
+      this.$router.push({ name: 'startChat', params: { username: this.username } })
     },
 
     refreshRoute: function () {
