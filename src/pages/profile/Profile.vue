@@ -36,6 +36,12 @@
         </div>
 
         <div class="item-account">
+          <div class="entry">admin:</div>
+          <div class="oneline-text-area">{{ admin }}</div>
+          <el-button v-if="IAmAdmin && !this.admin" @click="grantAdmin">grant</el-button>
+        </div>
+
+        <div class="item-account">
           <div class="entry">ban status:</div>
           <el-button style="width: 50px; padding-left: 10px; padding-right: 10px"
             :type="banned ? 'danger' : 'success'" disabled>
@@ -146,6 +152,11 @@ export default {
       flea.api.request(flea.api.url.admin.banUser, param)
         .then(res => res.json()).then(body => this.promptResult(body.success))
     },
+    grantAdmin: function () {
+      const param = { token: flea.util.cookie.get('token'), username: this.username }
+      flea.api.request(flea.api.url.admin.grantUser, param)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
+    },
 
     updatePassword: function () {
       const param = { token: flea.util.cookie.get('token'), password: this.password }
@@ -216,6 +227,7 @@ export default {
   height: 40px;
   line-height: 40px;
   text-align: center;
+  margin-right: 8px;
   border: 1px solid #DCDFE6;
   border-radius: 4px;
   box-sizing: border-box;

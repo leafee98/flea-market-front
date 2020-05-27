@@ -69,6 +69,7 @@ export default {
   height: 40px;
   line-height: 40px;
   text-align: center;
+  margin-right: 8px;
   border: 1px solid #DCDFE6;
   border-radius: 4px;
   box-sizing: border-box;
