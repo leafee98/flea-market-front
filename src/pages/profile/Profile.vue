@@ -151,11 +151,13 @@ export default {
       const param = { token: flea.util.cookie.get('token'), username: this.username, day: this.banDay }
       flea.api.request(flea.api.url.admin.banUser, param)
         .then(res => res.json()).then(body => this.promptResult(body.success))
+      setTimeout(this.refreshRoute, 800)
     },
     grantAdmin: function () {
       const param = { token: flea.util.cookie.get('token'), username: this.username }
       flea.api.request(flea.api.url.admin.grantUser, param)
         .then(res => res.json()).then(body => this.promptResult(body.success))
+      setTimeout(this.refreshRoute, 800)
     },
 
     updatePassword: function () {

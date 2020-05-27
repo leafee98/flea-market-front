@@ -6,13 +6,13 @@ import Register from '@/pages/register/Register.vue'
 
 import Profile from '@/pages/profile/Profile'
 
-import ProductSelling from '@/pages/product/list/selling.vue'
-import MyProducts from '@/pages/product/list/myProducts.vue'
-import BoughtProducts from '@/pages/product/list/boughtProducts.vue'
-import CensoringProduct from '@/pages/product/list/censoringProduct'
+import ProductSelling from '@/pages/product/list/Selling.vue'
+import MyProducts from '@/pages/product/list/MyProducts.vue'
+import BoughtProducts from '@/pages/product/list/BoughtProducts.vue'
+import CensoringProduct from '@/pages/product/list/CensoringProduct'
 
-import ProductDetail from '@/pages/product/detail.vue'
-import ProductDetailEdit from '@/pages/product/edit.vue'
+import ProductDetail from '@/pages/product/Detail.vue'
+import ProductDetailEdit from '@/pages/product/Edit.vue'
 
 Vue.use(VueRouter)
 
