@@ -2,15 +2,18 @@
   <div id='app'>
     <el-container>
       <el-header>
-        <div>
-          flea markdet
-          <el-button @click="jumpMarket">market</el-button>
-          <el-button v-if="admin" @click="jumpCensoringProduct">censoring product</el-button>
-          <el-button v-if="logged" @click="jumpMyProducts">my products</el-button>
-          <el-button v-if="logged" @click="jumpBoughtProducts">bought products</el-button>
-          <el-button v-if="logged" @click="newProduct">publish product</el-button>
-          <el-button v-if="logged" @click="jumpProfile">my profile</el-button>
-          <el-button type="warning" v-if="logged" @click="logout">logout</el-button>
+        <div style="display: flex; align-items: center">
+          <strong>flea markdet</strong>
+
+          <div style="margin-left: 8px">
+            <el-button @click="jumpMarket">market</el-button>
+            <el-button v-if="admin" @click="jumpCensoringProduct">censoring product</el-button>
+            <el-button v-if="logged" @click="jumpMyProducts">my products</el-button>
+            <el-button v-if="logged" @click="jumpBoughtProducts">bought products</el-button>
+            <el-button v-if="logged" @click="newProduct">publish product</el-button>
+            <el-button v-if="logged" @click="jumpProfile">my profile</el-button>
+            <el-button type="warning" v-if="logged" @click="logout">logout</el-button>
+          </div>
 
           <el-avatar v-if="logged" :src="avatarUrl" :size="54"
             style="margin-left: 15px">{{ nickname }}</el-avatar>
@@ -110,7 +113,7 @@ export default {
 
 <style>
 #main-panel {
-  margin-top: 16px;
+  margin-top: 8px;
   padding-top: 8px;
   box-sizing: border-box;
   border-top: 2px dashed #d7dae2;

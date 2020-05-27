@@ -194,11 +194,13 @@ export default {
       const param = { token: flea.util.cookie.get('token'), password: this.password }
       flea.api.request(flea.api.url.user.modifyPassword, param)
         .then(res => res.json()).then(body => this.promptResult(body.success))
+      setTimeout(this.refreshRoute, 800)
     },
     updateNickname: function () {
       const param = { token: flea.util.cookie.get('token'), nickname: this.nickname }
       flea.api.request(flea.api.url.user.modifyNickname, param)
         .then(res => res.json()).then(body => this.promptResult(body.success))
+      setTimeout(this.refreshRoute, 800)
     },
     updateAvatar: function () {
       const handleAddPic = (url) => {

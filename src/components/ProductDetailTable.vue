@@ -235,7 +235,7 @@ export default {
         picId: pic.productPicId
       }
       flea.api.request(flea.api.url.product.editDeletePic, param)
-        .then(this.refreshRoute)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
 
     finishEdit: function () {
@@ -244,7 +244,7 @@ export default {
         productId: this.detail.productId
       }
       flea.api.request(flea.api.url.product.editFinish, param)
-        .then(res => res.json()).then(this.refreshRoute)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
     editProduct: function () {
       const param = {
@@ -252,7 +252,7 @@ export default {
         productId: this.detail.productId
       }
       flea.api.request(flea.api.url.product.editProduct, param)
-        .then(this.refreshRoute)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
     dropProduct: function () {
       const param = {
@@ -260,7 +260,7 @@ export default {
         productId: this.detail.productId
       }
       flea.api.request(flea.api.url.product.deleteProduct, param)
-        .then(this.refreshRoute)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
 
     censorPass: function () {
