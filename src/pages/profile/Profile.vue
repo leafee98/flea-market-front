@@ -6,8 +6,9 @@
           :src="avatarUrl"
           :size="128"
           style="margin: auto; margin-bottom: 16px">
+          {{ nickname }}
         </el-avatar>
-        <div class="item-account">
+        <div class="item-account" v-if="myself">
           <div class="entry">avatar:</div>
           <div class="oneline-text-area">
             <input id="avatarFile" type="file" class="input-small" />
@@ -21,7 +22,7 @@
           </div>
         </div>
 
-        <div class="item-account">
+        <div class="item-account" v-if="myself">
           <div class="entry">password:</div>
           <el-input v-model="password" class="input-small" type="password"></el-input>
           <el-button type="primary" @click="updatePassword">modify</el-button>
@@ -29,25 +30,35 @@
 
         <div class="item-account">
           <div class="entry">nickname:</div>
-          <el-input v-model="nickname" class="input-small"></el-input>
-          <el-button type="primary" @click="updateNickname">save</el-button>
+          <el-input v-if="myself" v-model="nickname" class="input-small"></el-input>
+          <div v-else class="oneline-text-area">{{ nickname }}</div>
+          <el-button v-if="myself" type="primary" @click="updateNickname">save</el-button>
         </div>
 
         <div class="item-account">
           <div class="entry">ban status:</div>
-          <el-button :type="banStatus ? 'danger' : 'success'" disabled>
-            {{ banStatus ? 'banned' : 'fine' }}
+          <el-button style="width: 50px; padding-left: 10px; padding-right: 10px"
+            :type="banned ? 'danger' : 'success'" disabled>
+            {{ banned ? 'ban' : 'fine' }}
           </el-button>
+          <div v-if="IAmAdmin"
+            style="display: flex">
+            <el-input
+              style="width: 84px; margin-left: 8px; margin-right: 8px;"
+              placeholder="Day to ban"
+              v-model="banDay"></el-input>
+            <el-button @click="banUser">ban</el-button>
+          </div>
         </div>
 
-        <div class="item-account" v-if="!banStatus">
+        <div class="item-account" v-if="banned">
           <div class="entry">ban until:</div>
           <div class="oneline-text-area">
             {{ new Date(banUntil).toLocaleString() }}
           </div>
         </div>
 
-        <div class="item-account" v-if="!banStatus">
+        <div class="item-account">
           <div class="entry">join Time:</div>
           <div class="oneline-text-area">
             {{ new Date(joinTime).toLocaleString() }}
@@ -72,11 +83,14 @@ export default {
       joinTime: 0,
       admin: false,
       socialList: [],
-      myself: true
+
+      myself: true,
+      IAmAdmin: false,
+      banDay: 0
     }
   },
   computed: {
-    banStatus: function () {
+    banned: function () {
       return new Date().getTime() < this.banUntil
     }
   },
@@ -88,6 +102,8 @@ export default {
       this.myself = false
       this.loadOther(username)
     }
+
+    this.loadIAmAdmin()
   },
   methods: {
     loadMyself: function () {
@@ -102,6 +118,35 @@ export default {
       flea.api.request(flea.api.url.user.getUserDetail, param)
         .then(res => res.json()).then(this.handleLoad)
     },
+    handleLoad: function (body) {
+      if (body.success === true) {
+        const detail = body.data
+        this.avatarUrl = detail.avatarUrl
+        this.username = detail.username
+        this.nickname = detail.nickname
+        this.banUntil = detail.banUntil
+        this.joinTime = detail.joinTime
+        this.admin = detail.admin
+        this.socialList = detail.socialList
+      } else {
+        this.$message({
+          message: 'failed to get profile',
+          type: 'error'
+        })
+      }
+    },
+    loadIAmAdmin: function () {
+      const param = { token: flea.util.cookie.get('token') }
+      flea.api.request(flea.api.url.user.getMyDetail, param)
+        .then(res => res.json()).then(body => { this.IAmAdmin = body.data.admin })
+    },
+
+    banUser: function () {
+      const param = { token: flea.util.cookie.get('token'), username: this.username, day: this.banDay }
+      flea.api.request(flea.api.url.admin.banUser, param)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
+    },
+
     updatePassword: function () {
       const param = { token: flea.util.cookie.get('token'), password: this.password }
       flea.api.request(flea.api.url.user.modifyPassword, param)
@@ -138,23 +183,7 @@ export default {
       const pic = picFileDom.files[0]
       flea.api.picture.upload(pic).then(handlePicUpload)
     },
-    handleLoad: function (body) {
-      if (body.success === true) {
-        const detail = body.data
-        this.avatarUrl = detail.avatarUrl
-        this.username = detail.username
-        this.nickname = detail.nickname
-        this.banUntil = detail.banUntil
-        this.joinTime = detail.joinTime
-        this.admin = detail.admin
-        this.socialList = detail.socialList
-      } else {
-        this.$message({
-          message: 'failed to get profile',
-          type: 'error'
-        })
-      }
-    },
+
     refreshRoute: function () {
       window.location.reload(false)
     },
