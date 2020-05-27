@@ -75,8 +75,8 @@
           <strong>social list</strong>
           <div class="item-account" v-for="social in socialList" :key="social.socialId">
             <div v-if="myself" style="display: flex">
-              <el-input class="entry-input" v-model="social.socialType"></el-input>
-              <el-input class="input-small" v-model="social.socialUrl"></el-input>
+              <div class="entry">{{ social.socialType }}</div>
+              <div class="oneline-text-area">{{ social.socialUrl }}</div>
               <el-button @click="removeSocial(social)">drop</el-button>
             </div>
             <div v-else style="display: flex">
@@ -286,6 +286,7 @@ export default {
 
 .entry {
   width: 120px;
+  text-align: center;
 }
 
 .entry-input {
