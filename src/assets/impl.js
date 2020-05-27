@@ -1,4 +1,4 @@
-const fleaHost = 'localhost:8089'
+const fleaHost = location.host
 const fleaApiProtocol = 'http://'
 
 const fleaApiUrl = {
