@@ -70,6 +70,31 @@
             {{ new Date(joinTime).toLocaleString() }}
           </div>
         </div>
+
+        <div style="margin-top: 32px; display: grid">
+          <strong>social list</strong>
+          <div class="item-account" v-for="social in socialList" :key="social.socialId">
+            <div v-if="myself" style="display: flex">
+              <el-input class="entry-input" v-model="social.socialType"></el-input>
+              <el-input class="input-small" v-model="social.socialUrl"></el-input>
+              <el-button @click="removeSocial(social)">drop</el-button>
+            </div>
+            <div v-else style="display: flex">
+              <div class="entry">{{ social.socialType }}</div>
+              <div class="oneline-text-area">{{ social.socialUrl }}</div>
+            </div>
+          </div>
+
+          <div v-if="myself" style="display: flex">
+              <el-input class="entry-input"
+                placeholder="social type"
+                v-model="newSocial.socialType"></el-input>
+              <el-input class="input-small"
+                placeholder="social url"
+                v-model="newSocial.socialUrl"></el-input>
+              <el-button @click="addSocial">add</el-button>
+          </div>
+        </div>
       </div>
     </el-main>
   </el-container>
@@ -89,6 +114,11 @@ export default {
       joinTime: 0,
       admin: false,
       socialList: [],
+
+      newSocial: {
+        socialType: '',
+        socialUrl: ''
+      },
 
       myself: true,
       IAmAdmin: false,
@@ -196,6 +226,25 @@ export default {
       const pic = picFileDom.files[0]
       flea.api.picture.upload(pic).then(handlePicUpload)
     },
+    addSocial: function () {
+      const param = {
+        token: flea.util.cookie.get('token'),
+        socialType: this.newSocial.socialType,
+        socialUrl: this.newSocial.socialUrl
+      }
+      flea.api.request(flea.api.url.user.addSocial, param)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
+      setTimeout(this.refreshRoute, 800)
+    },
+    removeSocial: function (social) {
+      const param = {
+        token: flea.util.cookie.get('token'),
+        socialId: social.socialId
+      }
+      flea.api.request(flea.api.url.user.removeSocial, param)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
+      setTimeout(this.refreshRoute, 800)
+    },
 
     refreshRoute: function () {
       window.location.reload(false)
@@ -237,5 +286,10 @@ export default {
 
 .entry {
   width: 120px;
+}
+
+.entry-input {
+  width: 112px;
+  margin-right: 8px
 }
 </style>>

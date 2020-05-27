@@ -61,7 +61,7 @@ const fleaApiParam = {
     modifyPassword: { token: null, password: null },
     modifyNickname: { token: null, nickname: null },
     modifyAvatar: { token: null, avatarUrl: null },
-    addSocial: { token: null, socialtype: null, socialurl: null },
+    addSocial: { token: null, socialType: null, socialUrl: null },
     removeSocial: { token: null, socialId: null },
     getMyDetail: { token: null },
     getUserDetail: { username: null }
