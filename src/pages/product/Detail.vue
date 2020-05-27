@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex">
-    <compo-product-detail-table style="width: 400px"
+    <compo-product-detail-table style="width: 450px"
       :detail="detail" :edit="false">
     </compo-product-detail-table>
 

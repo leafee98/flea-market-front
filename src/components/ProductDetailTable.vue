@@ -49,12 +49,16 @@
           class="pic-item"
           :preview-src-list="new Array(pic.productPicUrl)">
         </el-image>
-        <el-button v-if="edit" @click="dropPic(pic)">drop</el-button>
+        <el-button v-if="edit"
+          style="margin-left: 8px"
+          @click="dropPic(pic)">
+          drop
+        </el-button>
       </div>
     </div>
 
     <div v-if="edit">
-      <input type="file" id="picFile" />
+      <input style="width: 300px" type="file" id="picFile" />
       <el-button @click="newPic">new picture</el-button>
     </div>
 
@@ -75,6 +79,35 @@
       <el-button v-if="confirmable" @click="confirmOrder">confrim order</el-button>
       <el-button v-if="confirmable" @click="cancelOrder">cancel order</el-button>
     </div>
+
+    <div class="top-dash-border" style="margin-top: 16px; padding-top: 8px;">
+      <div>
+        <!-- other's comment -->
+        <div class="top-tight-dash-border"
+          v-for="c in commentList" :key="c.commentId">
+          <div class="action-element"
+            @click="viewDetail(c.user.username)"
+            style="display: flex; padding: 4px">
+            <el-avatar class="action-element"
+              @click="viewDetail(c.user.username)"
+              size="small"
+              :src="c.user.avatarUrl"></el-avatar>
+            <span
+              style="align-self: center; margin-left: 20px; color: #606266; font-size: small">
+              {{ c.user.nickname }}
+            </span>
+          </div>
+          <div class="multiline-text-area" style="margin-top: 4px">
+            {{ c.content }}
+          </div>
+        </div>
+      </div>
+      <div class="top-dash-border" style="margin-top: 16px; padding-top: 8px;">
+        <!-- write comment -->
+        <el-button @click="comment">post comment</el-button>
+        <el-input type="textarea" v-model="commentContent"></el-input>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -88,7 +121,9 @@ export default {
   ],
   data: function () {
     return {
-      admin: false
+      admin: false,
+      commentList: [],
+      commentContent: ''
     }
   },
   computed: {
@@ -116,10 +151,27 @@ export default {
     }
   },
   created: function () {
-    flea.api.request(flea.api.url.user.getMyDetail, { token: this.token })
-      .then(res => res.json()).then(body => { this.admin = body.data.admin })
+    this.loadAdmin()
+    this.loadComments()
+  },
+  watch: {
+    detail: function () {
+      this.loadComments()
+    }
   },
   methods: {
+    loadAdmin: function () {
+      flea.api.request(flea.api.url.user.getMyDetail, { token: this.token })
+        .then(res => res.json()).then(body => { this.admin = body.data.admin })
+    },
+    loadComments: function () {
+      if (this.detail.productId === undefined) { return }
+
+      const param = { productId: this.detail.productId }
+      flea.api.request(flea.api.url.product.getComments, param)
+        .then(res => res.json()).then(body => { this.commentList = body.data })
+    },
+
     update: function () {
       const token = flea.util.cookie.get('token')
       const productId = this.detail.productId
@@ -144,9 +196,9 @@ export default {
           if (bodys[0].success === true &&
             bodys[1].success === true &&
             bodys[2].success === true) {
-            this.handlePromptResult({ success: true })
+            this.promptResult(true)
           } else {
-            this.handlePromptResult({ success: false })
+            this.promptResult(false)
           }
         })
     },
@@ -157,9 +209,8 @@ export default {
           productId: this.detail.productId,
           picUrl: url
         }
-        flea.api.request(flea.api.url.product.editAddPic, param).then(res => {
-          this.refreshRoute()
-        })
+        flea.api.request(flea.api.url.product.editAddPic, param)
+          .then(res => res.json()).then(body => this.promptResult(body.success))
       }
       const handlePicUpload = (url) => {
         if (url === '') {
@@ -186,6 +237,7 @@ export default {
       flea.api.request(flea.api.url.product.editDeletePic, param)
         .then(this.refreshRoute)
     },
+
     finishEdit: function () {
       const param = {
         token: flea.util.cookie.get('token'),
@@ -210,41 +262,55 @@ export default {
       flea.api.request(flea.api.url.product.deleteProduct, param)
         .then(this.refreshRoute)
     },
+
     censorPass: function () {
       const param = { token: this.token, productId: this.detail.productId, pass: true }
       flea.api.request(flea.api.url.admin.censorProduct, param)
-        .then(res => res.json()).then(this.handlePromptResult)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
     censorDeny: function () {
       const param = { token: this.token, productId: this.detail.productId, pass: false }
       flea.api.request(flea.api.url.admin.censorProduct, param)
-        .then(res => res.json()).then(this.handlePromptResult)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
+    },
+
+    comment: function () {
+      const param = {
+        token: this.token,
+        productId: this.detail.productId,
+        content: this.commentContent
+      }
+      flea.api.request(flea.api.url.product.comment, param)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
+        .then(this.loadComments)
     },
     orderProduct: function () {
       const param = { token: this.token, productId: this.detail.productId }
       flea.api.request(flea.api.url.product.orderProduct, param)
-        .then(res => res.json()).then(this.handlePromptResult)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
     confirmOrder: function () {
       const param = { token: this.token, productId: this.detail.productId }
       flea.api.request(flea.api.url.product.confirmOrder, param)
-        .then(res => res.json()).then(this.handlePromptResult)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
     cancelOrder: function () {
       const param = { token: this.token, productId: this.detail.productId }
       flea.api.request(flea.api.url.product.cancelOrder, param)
-        .then(res => res.json()).then(this.handlePromptResult)
+        .then(res => res.json()).then(body => this.promptResult(body.success))
     },
-    promptSuccess: function (success) {
-      setTimeout(() => { window.location.reload(false) }, 500)
+
+    viewDetail: function (username) {
+      this.$router.push({ name: 'profile', params: { username: username } })
     },
+
     refreshRoute: function () {
       setTimeout(() => {
         window.location.reload(false)
-      }, 500)
+      }, 1000)
     },
-    handlePromptResult: function (body) {
-      if (body.success === true) {
+    promptResult: function (success) {
+      if (success === true) {
         this.$message.success('action success')
       } else {
         this.$message.error('action failed')
@@ -277,5 +343,34 @@ export default {
   border: 1px solid #DCDFE6;
   border-radius: 4px;
   box-sizing: border-box;
+}
+
+.multiline-text-area {
+  color: #606266;
+  border: 1px solid #DCDFE6;
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 12px 20px 12px 20px;
+}
+
+.top-dash-border {
+  border-top: 2px dashed #d7dae2
+}
+
+.top-tight-dash-border {
+  border-top: 1px dashed #d7dae2;
+  margin-bottom: 4px;
+  margin-top: 4px;
+  padding-top: 4px;
+  box-sizing: border-box;
+}
+
+.action-element {
+  cursor: pointer;
+  transition: 0.5s
+}
+
+.action-element:hover {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 }
 </style>
